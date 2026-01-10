@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="id" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuesioner Penelitian - Universitas Pancasila</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+            min-height: 100vh;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #052962 0%, #041f4a 100%);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(5, 41, 98, 0.2);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(5, 41, 98, 0.3);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .result-popup {
+            animation: popUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        @keyframes popUp {
+            0% { transform: scale(0.8); opacity: 0; }
+            70% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="h-full w-full overflow-auto">
+    <div class="min-h-screen flex flex-col items-center justify-center p-6">
+        <!-- Main Container -->
+        <div class="w-full max-w-md text-center fade-in">
+            
+            <!-- Logo -->
+            <div class="mb-10">
+                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgCja6HGlwszY69g15xWRPpW-YCqJ8fCl2VMlAdU8Flv128Nhk2djY_oYsz1sOd3_pLP3fqmsyVMyxFqfqBaZl1irVErPv_7hfggb7NiMdMnahp9i5BnirygCyX1QGN5h5mOB4Krb864kF0g67hsKKbWfzeer_KDQBGS9FA_CyGMvZJQ6H33pjCOPVy/s320/GKL18_Universitas%20Pancasila%20-%20Koleksilogo.com.png" 
+                     alt="Logo Universitas Pancasila" 
+                     class="w-36 h-36 mx-auto mb-6 object-contain">
+                <h1 class="text-2xl font-bold text-gray-900">Universitas Pancasila</h1>
+                <p class="text-gray-600 mt-1">Fakultas Ekonomi dan Bisnis</p>
+            </div>
+            
+            <!-- Title -->
+            <div class="mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Kuesioner Penelitian</h2>
+                <p class="text-gray-600 text-lg">Klik tombol di bawah untuk memulai</p>
+            </div>
+            
+            <!-- Result Display -->
+            <div id="result-container" class="hidden mb-8 result-popup">
+                <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+                    <div class="flex items-center justify-center w-14 h-14 bg-green-100 rounded-full mx-auto mb-4">
+                        <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Kuesioner Terpilih!</h3>
+                    <p class="text-sm text-gray-600 mb-4" id="result-description"></p>
+                    <p class="inline-flex items-center gap-2 text-blue-600 font-medium text-sm">
+                        <span>Membuka kuesioner</span>
+                        <svg class="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Main Button -->
+            <div>
+                <button id="randomize-btn" 
+                        class="btn-primary text-white font-semibold text-lg px-12 py-5 rounded-xl inline-flex items-center gap-3 w-full justify-center">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <span class="text-lg">Mulai Kuesioner</span>
+                </button>
+                <p class="text-sm text-gray-500 mt-4">Kuesioner akan terbuka di tab baru</p>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        // ==================== SIMPLE RANDOMIZER ====================
+        class SimpleRandomizer {
+            constructor() {
+                // Google Form links
+                this.links = [
+                    "https://forms.gle/46ND2Gz3APux5Srd6",  // Kuesioner A
+                    "https://forms.gle/Jr7ze3nXeGfm8zeW6"   // Kuesioner B
+                ];
+                
+                this.surveyNames = [
+                    "Kuesioner A",
+                    "Kuesioner B"
+                ];
+                
+                // Initialize
+                this.init();
+            }
+            
+            // ==================== DOM INITIALIZATION ====================
+            init() {
+                // Get DOM elements
+                this.randomizeBtn = document.getElementById('randomize-btn');
+                this.resultContainer = document.getElementById('result-container');
+                this.resultDescription = document.getElementById('result-description');
+                
+                // Set up event listener
+                this.randomizeBtn.addEventListener('click', () => this.startSurvey());
+            }
+            
+            // ==================== MAIN FUNCTION ====================
+            startSurvey() {
+                // Simple random selection
+                const randomIndex = Math.floor(Math.random() * this.links.length);
+                const selectedLink = this.links[randomIndex];
+                const surveyName = this.surveyNames[randomIndex];
+                
+                // Disable button temporarily
+                this.randomizeBtn.disabled = true;
+                this.randomizeBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                
+                // Show result animation
+                this.showResultAnimation(surveyName);
+                
+                // Open survey after delay
+                setTimeout(() => {
+                    window.open(selectedLink, '_blank', 'noopener,noreferrer');
+                    
+                    // Re-enable button
+                    setTimeout(() => {
+                        this.randomizeBtn.disabled = false;
+                        this.randomizeBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    }, 2000);
+                }, 1500);
+            }
+            
+            showResultAnimation(surveyName) {
+                // Update result text
+                this.resultDescription.textContent = surveyName;
+                
+                // Show result container
+                this.resultContainer.classList.remove('hidden');
+                
+                // Scroll to result
+                this.resultContainer.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+            }
+        }
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            new SimpleRandomizer();
+        });
+    </script>
+</body>
+</html>
